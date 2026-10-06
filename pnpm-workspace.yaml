@@ -1,0 +1,12 @@
+packages:
+  - "packages/*"
+  - "packs/*"
+  - "apps/*"
+
+# esbuild ships a postinstall that links its prebuilt native binary; vitest needs
+# it. pnpm 10+ blocks dependency build scripts by default — approve this known one.
+allowBuilds:
+  # core-js's postinstall is just a funding/telemetry message (jsforce transitive) — skip it.
+  core-js: false
+  core-js-pure: false
+  esbuild: true

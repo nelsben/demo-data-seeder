@@ -1,0 +1,29 @@
+{
+  "name": "@dataseed/mcp",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/tools.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "NODE_OPTIONS=--experimental-sqlite vitest run",
+    "dev": "NODE_OPTIONS=--experimental-sqlite tsx src/server.ts"
+  },
+  "dependencies": {
+    "@dataseed/core": "workspace:*",
+    "@dataseed/engine": "workspace:*",
+    "@dataseed/pack-salescloud": "workspace:*",
+    "@dataseed/warehouse": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^3.24.1",
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.3",
+    "tsx": "^4.22.4",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

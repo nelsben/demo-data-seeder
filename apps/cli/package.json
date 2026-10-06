@@ -1,0 +1,21 @@
+{
+  "name": "@dataseed/cli",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/main.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@dataseed/core": "workspace:*",
+    "@dataseed/engine": "workspace:*",
+    "@dataseed/pack-salescloud": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.3",
+    "typescript": "^5.7.2"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "demo-data-seeder",
+  "version": "0.0.0",
+  "private": true,
+  "description": "A general Salesforce data-testing app (pure TS engine + Vite/React SPA + Fastify): point at any org, introspect its capabilities, and generate realistic, grounded test data by blending deterministic, probabilistic, and novel-LLM generation. Target schemas are pluggable packs (salescloud is the pack). See docs/app-architecture.md.",
+  "type": "module",
+  "packageManager": "pnpm@11.7.0",
+  "bin": {
+    "dataseed": "./run-op.js",
+    "dataseed-mcp": "./dataseed-mcp.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "prepare": "git config core.hooksPath .githooks || true",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm -r --if-present test",
+    "gate": "pnpm -r typecheck && pnpm -r test",
+    "build": "pnpm -r --if-present build",
+    "op": "node run-op.js",
+    "list": "node run-op.js list",
+    "smoke": "node run-op.js list && node run-op.js run example --companies 3",
+    "bless:golden": "pnpm --filter @dataseed/pack-salescloud exec vitest run -u golden-corpus",
+    "dev:server": "pnpm --filter @dataseed/server dev",
+    "dev:web": "pnpm --filter @dataseed/web dev"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "tsx": "^4.22.4",
+    "dotenv": "^16.4.7"
+  }
+}

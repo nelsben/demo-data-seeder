@@ -1,0 +1,126 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# .gitignore — demo-data-seeder
+#
+# A Node (ESM) + SFDX data-tooling repo. It GENERATES realistic, narrative-rich
+# Salesforce Sales Cloud demo data (Accounts/Contacts/Opps/Emails/transcripts/
+# activities) and loads it into Salesforce scratch / dev / customer orgs.
+#
+# Ignore three classes of cruft: (1) Node/SFDX toolchain state, (2) generated
+# data outputs + per-run manifests (org-specific, disposable, never portable),
+# (3) secrets / org auth material. Commit source + scenario configs + docs only.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Node / npm ───────────────────────────────────────────────────────────────
+node_modules/
+.turbo/
+**/dist/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm/
+.pnpm-store/
+.yarn/
+.node_repl_history
+*.tgz
+.eslintcache
+.cache/
+coverage/
+.nyc_output/
+
+# ── Salesforce CLI / SFDX ────────────────────────────────────────────────────
+# Local CLI state, retrieved/temp metadata, and per-developer config. The org
+# auth itself lives in ~/.sfdx (outside the repo), but these land in-tree.
+.sf/
+.sfdx/
+.localdevserver/
+deploy-options.json
+**/__tests__/**/*.log
+
+# SFDX scratch-org definitions are SOURCE (config/*-scratch-def.json) and ARE
+# committed. Only ignore generated/local org artifacts:
+.sfdx-data/
+*.sfdx-org
+
+# ── Generated demo-data outputs ──────────────────────────────────────────────
+# Everything the seeder emits is org-specific and reproducible from source +
+# scenario config — never commit it. See tradeoffs in the seeder docs.
+/out/
+/generated/
+/dist/
+/build/
+/tmp/
+*.local
+*.local.*
+
+# Per-run created-record manifests (created-record IDs for cleanup/teardown).
+# Org-specific + stale the moment the org is reaped — disposable, not portable.
+.manifest.json
+*.manifest.json
+manifest-*.json
+
+# Large generated dataset dumps: bulk LLM-generated email/transcript/note
+# bodies, anchor-company caches (Wikidata/SEC/EDGAR pulls), bulk-loader payloads,
+# and eval result snapshots written per run.
+/data/generated/
+/anchors-cache/
+*.dataset.json
+*.dataset.ndjson
+*.bulk.csv
+**/results/*.json
+eval-results/
+
+# ── Secrets / keys / org auth material ───────────────────────────────────────
+# A seeder authenticates to live orgs and may route LLM calls — keep every
+# credential out of git. .env files, JWT/connected-app keys, auth URLs.
+.env
+.env.*
+!.env.example
+secrets/
+*.key
+*.pem
+*.p12
+*.jks
+server.key
+jwt/
+*.auth-url
+*sfdxAuthUrl*
+authFiles/
+
+# ── Editor / IDE ─────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# ── OS cruft ─────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ── Claude Code (agent-side) ─────────────────────────────────────────────────
+# .claude/settings.json is committed config. Per-developer local settings and
+# the real MCP config (which names YOUR org alias) stay out of git — copy
+# .mcp.example.json to .mcp.json locally.
+.claude/settings.local.json
+.claude/local/
+.claude/*.local.log
+.mcp.json
+
+# Built front-end bundle — build output, never committed.
+apps/web/dist/
+
+# local introspection artifacts (CapabilityProfiles)
+.dataseed/

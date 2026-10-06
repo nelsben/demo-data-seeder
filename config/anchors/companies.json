@@ -1,0 +1,89 @@
+{
+  "$schema_note": "Real, well-known public companies used as demo-ACCOUNT anchors. Real names ground the data; the workflow (contacts, deals, signals) around them is fictional. Email domains are synthetic (.example) — we never emit a real person's address. industry maps to the seeder's 15-value INDUSTRIES set; headcount_band is an approximate public order-of-magnitude employee band, not a precise figure. Resolve/upsert by name at load time, never by literal Id.",
+  "anchors": [
+    {
+      "name": "Stripe",
+      "domain": "stripe.example",
+      "industry": "Financial Services",
+      "headcount_band": "5000-10000",
+      "descriptor": "Payments infrastructure and financial APIs for internet businesses."
+    },
+    {
+      "name": "Snowflake",
+      "domain": "snowflake.example",
+      "industry": "Technology",
+      "headcount_band": "5000-10000",
+      "descriptor": "Cloud data platform for warehousing, analytics, and data sharing."
+    },
+    {
+      "name": "Shopify",
+      "domain": "shopify.example",
+      "industry": "Retail",
+      "headcount_band": "5000-10000",
+      "descriptor": "Commerce platform powering online and in-person retail for merchants."
+    },
+    {
+      "name": "Epic Systems",
+      "domain": "epicsystems.example",
+      "industry": "Healthcare",
+      "headcount_band": "10000+",
+      "descriptor": "Electronic health record software for hospitals and health systems."
+    },
+    {
+      "name": "Caterpillar",
+      "domain": "caterpillar.example",
+      "industry": "Manufacturing",
+      "headcount_band": "10000+",
+      "descriptor": "Heavy construction, mining, and industrial equipment manufacturer."
+    },
+    {
+      "name": "Delta Air Lines",
+      "domain": "delta.example",
+      "industry": "Aerospace",
+      "headcount_band": "10000+",
+      "descriptor": "Major passenger and cargo airline operating a global route network."
+    },
+    {
+      "name": "Pfizer",
+      "domain": "pfizer.example",
+      "industry": "Pharmaceuticals",
+      "headcount_band": "10000+",
+      "descriptor": "Global biopharmaceutical company developing vaccines and medicines."
+    },
+    {
+      "name": "Chevron",
+      "domain": "chevron.example",
+      "industry": "Energy",
+      "headcount_band": "10000+",
+      "descriptor": "Integrated energy company spanning oil, gas, and lower-carbon fuels."
+    },
+    {
+      "name": "FedEx",
+      "domain": "fedex.example",
+      "industry": "Logistics",
+      "headcount_band": "10000+",
+      "descriptor": "Global express shipping, freight, and supply-chain logistics provider."
+    },
+    {
+      "name": "Verizon",
+      "domain": "verizon.example",
+      "industry": "Telecommunications",
+      "headcount_band": "10000+",
+      "descriptor": "Wireless carrier and broadband network operator across the US."
+    },
+    {
+      "name": "Marriott International",
+      "domain": "marriott.example",
+      "industry": "Hospitality",
+      "headcount_band": "10000+",
+      "descriptor": "Operator and franchisor of hotel and lodging brands worldwide."
+    },
+    {
+      "name": "Chubb",
+      "domain": "chubb.example",
+      "industry": "Insurance",
+      "headcount_band": "10000+",
+      "descriptor": "Global property, casualty, and commercial-lines insurance underwriter."
+    }
+  ]
+}

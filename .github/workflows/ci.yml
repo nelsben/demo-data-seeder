@@ -1,0 +1,61 @@
+name: CI
+
+# Single job ("CI") so branch protection has exactly ONE predictable required
+# status check (do NOT rename the job — `CI` is the required context on main).
+# Triggers on every PR to main AND every push to main.
+#
+# As of M0 the repo is a pnpm monorepo (packages/shared, packages/engine; apps/*
+# land in later milestones). The gate is: install (frozen lockfile) → typecheck
+# every package (tsc --noEmit) → run every package's vitest suite → smoke the
+# preserved run-op.js op-contract CLI. node_modules build scripts are blocked by
+# pnpm except the explicitly-approved esbuild (pnpm-workspace.yaml allowBuilds).
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      # pnpm must be set up BEFORE setup-node so node's pnpm cache works. Version
+      # is read from package.json "packageManager" (pnpm@11.7.0).
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      # Node 22 (LTS): pnpm 11.7 requires >=22.13 (it uses node:sqlite).
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      # Typecheck every workspace package (the Zod-as-types guard relies on tsc).
+      - name: Typecheck
+        run: pnpm -r --if-present typecheck
+
+      # Run every package's vitest suite (schema contracts + RNG determinism).
+      - name: Test
+        run: pnpm -r --if-present test
+
+      # Smoke the preserved op-contract CLI: discovery + the side-effect-free
+      # `example` op (check/run/verify only log) must each exit 0.
+      - name: Smoke — op runner
+        run: |
+          node run-op.js list
+          node run-op.js run example --companies 3
