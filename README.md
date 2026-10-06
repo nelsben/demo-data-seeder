@@ -1,5 +1,7 @@
 # demo-data-seeder
 
+![demo-data-seeder — grounded synthetic Sales Cloud data, with an MCP server: introspect → generate → load/teardown → MCP](docs/assets/demo-data-seeder-card.png)
+
 Generates realistic, narrative-rich **Salesforce Sales Cloud** datasets — Accounts, Contacts, Leads, Opportunities (with line items), Campaigns, the communication/activity history (emails, call transcripts, activity notes), and the wider account graph (Assets, Cases) — for **demos and testing**.
 
 Point it at any Salesforce org. It introspects the org's limits, scopes a run, generates **grounded synthetic data** that looks like a real company's pipeline, and loads it (or disperses it to a file / SQLite corpus / MCP consumer). Everything it generates is **standard Salesforce objects** — no custom objects, no managed package required.
