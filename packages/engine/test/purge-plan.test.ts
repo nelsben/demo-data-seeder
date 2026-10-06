@@ -6,8 +6,11 @@
 // function of its input (see packages/engine/src/purge/plan.ts + manifest.ts).
 
 import { describe, it, expect } from "vitest";
+import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { buildPredicate, buildPurgePlan, chunkIds, PURGE_CHUNK_SIZE } from "../src/purge/plan.js";
-import { isDenied } from "../src/purge/deny-list.js";
+import { isDenied, loadExtraDenyList, PURGE_DENY_ENV, PURGE_DENY_FILE } from "../src/purge/deny-list.js";
 import { PurgeManifest, serializePurgeManifest, parsePurgeManifest } from "../src/purge/manifest.js";
 
 describe("buildPredicate", () => {
@@ -61,6 +64,39 @@ describe("isDenied", () => {
     expect(isDenied("Audit_Log__c")).toBe(false);
     expect(isDenied("Custom_Framework__c")).toBe(false);
   });
+
+  it("denies working-copy extras (case-insensitive) without widening the built-in list", () => {
+    expect(isDenied("Custom_Framework__c", ["Custom_Framework__c"])).toBe(true);
+    expect(isDenied("custom_framework__c", ["Custom_Framework__c"])).toBe(true);
+    expect(isDenied("Audit_Log__c", ["Custom_Framework__c"])).toBe(false);
+    expect(isDenied("User", ["Custom_Framework__c"])).toBe(true); // built-ins still apply
+  });
+});
+
+describe("loadExtraDenyList — the per-working-copy DENY extension", () => {
+  const emptyDir = () => mkdtempSync(join(tmpdir(), "purge-deny-"));
+
+  it("is empty with no env and no file", () => {
+    expect(loadExtraDenyList({ env: {}, cwd: emptyDir() })).toEqual([]);
+  });
+
+  it("reads the comma-separated env var, trimming blanks", () => {
+    expect(loadExtraDenyList({ env: { [PURGE_DENY_ENV]: " Config__c, Rule__c ,, " }, cwd: emptyDir() })).toEqual(["Config__c", "Rule__c"]);
+  });
+
+  it("reads .dataseed/purge-deny.json and merges it with the env, de-duplicated", () => {
+    const cwd = emptyDir();
+    mkdirSync(join(cwd, ".dataseed"));
+    writeFileSync(join(cwd, PURGE_DENY_FILE), JSON.stringify(["Rule__c", "Library__c", "", 42]));
+    expect(loadExtraDenyList({ env: { [PURGE_DENY_ENV]: "Config__c,Rule__c" }, cwd }).sort()).toEqual(["Config__c", "Library__c", "Rule__c"]);
+  });
+
+  it("ignores a malformed file (fail-soft — the built-in list still applies)", () => {
+    const cwd = emptyDir();
+    mkdirSync(join(cwd, ".dataseed"));
+    writeFileSync(join(cwd, PURGE_DENY_FILE), "{not json");
+    expect(loadExtraDenyList({ env: {}, cwd })).toEqual([]);
+  });
 });
 
 describe("buildPurgePlan — refusals", () => {
@@ -91,6 +127,13 @@ describe("buildPurgePlan — refusals", () => {
   it("DENY-list refusal wins even over --all", () => {
     const plan = buildPurgePlan({ sobject: "User", all: true });
     expect(plan.ok).toBe(false);
+  });
+
+  it("refuses a working-copy extraDeny object even with a real predicate, and still allows others", () => {
+    const denied = buildPurgePlan({ sobject: "Custom_Framework__c", where: "Id != null", extraDeny: ["Custom_Framework__c"] });
+    expect(denied.ok).toBe(false);
+    if (!denied.ok) expect(denied.reason).toMatch(/DENY list/);
+    expect(buildPurgePlan({ sobject: "Audit_Log__c", where: "Id != null", extraDeny: ["Custom_Framework__c"] }).ok).toBe(true);
   });
 
   it("builds a real plan for an allowed object with a predicate", () => {

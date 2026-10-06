@@ -53,8 +53,11 @@ node run-op.js run purge --org <alias> --sobject <ApiName> \
 - **The DENY list wins even over `--all`.** `purge` refuses outright on:
   `User`, `Profile`, `PermissionSet`, `Organization`, any `*__mdt` (Custom Metadata
   Type — config, never data). An installed app's own custom config objects are NOT
-  hardcoded here (the engine stays domain-agnostic) — scope a purge with `--where` /
-  `--older-than-days` rather than relying on the DENY list to protect app config.
+  hardcoded here (the engine stays domain-agnostic). Protect them **per working copy**
+  instead — both sources are optional and merged with the built-in list:
+  `DATASEED_PURGE_DENY="My_Config__c,My_Rule__c"` (env, comma-separated) and/or
+  `.dataseed/purge-deny.json` (a JSON array of API names; `.dataseed/` is gitignored).
+  A malformed file is ignored (fail-soft) — the built-in list always applies.
 - **Dry run (default, no `--yes`).** Prints the plan — object, predicate, matched
   count, a sample of 5 Ids (with `Name`/`Subject`/`Title` when the object has one),
   and the estimated MB that would free — and writes nothing.

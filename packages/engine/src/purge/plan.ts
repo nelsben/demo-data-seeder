@@ -19,6 +19,8 @@ export interface PurgePlanInput {
   dateField?: string;
   /** Explicit opt-in to purge with NO predicate at all (matches every row of `sobject`). */
   all?: boolean;
+  /** Working-copy-specific DENY-listed sObjects, merged with the built-in list (see deny-list.ts `loadExtraDenyList`). */
+  extraDeny?: readonly string[];
 }
 
 export type PurgePlanResult =
@@ -43,7 +45,7 @@ export function buildPredicate(input: Pick<PurgePlanInput, "where" | "olderThanD
 
 /** Build the plan, or refuse: DENY-listed object (checked first — wins even over --all), or a bare purge without --all. */
 export function buildPurgePlan(input: PurgePlanInput): PurgePlanResult {
-  if (isDenied(input.sobject)) {
+  if (isDenied(input.sobject, input.extraDeny ?? [])) {
     return { ok: false, reason: `refusing to purge "${input.sobject}" — on the purge DENY list (config/identity object, never data)` };
   }
   const predicate = buildPredicate(input);

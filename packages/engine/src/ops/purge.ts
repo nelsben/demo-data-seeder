@@ -27,6 +27,7 @@ import { SfCliClient } from "../introspect/sf-client.js";
 import { JsforceLoadTarget } from "../load/connection.js";
 import { runPurge, verifyPurge, type PurgeArgs as PurgeRunArgs, type PurgeReader, type PurgeDeleter, type PurgeManifestWriter } from "../purge/run.js";
 import { serializePurgeManifest, parsePurgeManifest } from "../purge/manifest.js";
+import { loadExtraDenyList } from "../purge/deny-list.js";
 
 export const PURGE_DIR = join(process.cwd(), ".dataseed", "purge");
 /** Stable per-(org, sobject) pointer to the latest REAL delete's manifest — how `verify()` recovers
@@ -97,6 +98,7 @@ function toRunArgs(args: PurgeArgs, yes: boolean): PurgeRunArgs {
     limit: args.limit,
     yes,
     hardDelete: args.hardDelete,
+    extraDeny: loadExtraDenyList(), // DATASEED_PURGE_DENY + .dataseed/purge-deny.json (this working copy's config objects)
   };
 }
 
@@ -104,7 +106,7 @@ export const purgeOp: Op<PurgeArgs> = {
   id: "purge",
   name: "Delete a targeted set of rows from an org (dry-run by default)",
   description:
-    "Preview (default) or delete (--yes) rows matching --where / --older-than-days on any sObject. Refuses a bare purge (no predicate) unless --all, and refuses a small config/identity DENY list. Deletes in 200-row chunks; --hard-delete additionally bypasses the Recycle Bin so DataStorageMB actually drops. Writes a manifest under .dataseed/purge/<org>/<timestamp>.json on every real delete. The sanctioned delete tool for demo AND test data — see docs/storage-and-purge.md.",
+    "Preview (default) or delete (--yes) rows matching --where / --older-than-days on any sObject. Refuses a bare purge (no predicate) unless --all, and refuses a small config/identity DENY list (extend it per working copy via DATASEED_PURGE_DENY or .dataseed/purge-deny.json). Deletes in 200-row chunks; --hard-delete additionally bypasses the Recycle Bin so DataStorageMB actually drops. Writes a manifest under .dataseed/purge/<org>/<timestamp>.json on every real delete. The sanctioned delete tool for demo AND test data — see docs/storage-and-purge.md.",
   idempotent: false, // re-evaluates the live match set every run — new rows can match between runs
   prerequisites: ["sf authenticated to the org", "delete permission on the target sObject"],
   affects: [
