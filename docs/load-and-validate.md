@@ -10,23 +10,23 @@ Governing rule for everything here: **seed the inputs, let the real pipeline pro
 
 ## 0. TL;DR — the canonical happy path
 
-Ops run via `node run-op.js run <id> --<arg> <value>` (`list` to enumerate, `run <id> --help` for args). The lifecycle is **introspect → generate → fill copy → load → verify → teardown**:
+Ops run via `node bin/run-op.js run <id> --<arg> <value>` (`list` to enumerate, `run <id> --help` for args). The lifecycle is **introspect → generate → fill copy → load → verify → teardown**:
 
 ```bash
 # 1. introspect the target org (limits, objects, picklists) — scopes the run
-node run-op.js run profile-org --org <alias>
+node bin/run-op.js run profile-org --org <alias>
 
 # 2. plan a demo dataset (the per-account Deal Dossier spine + record skeletons)
-node run-op.js run plan-demo --org <alias> --volume 12
+node bin/run-op.js run plan-demo --org <alias> --volume 12
 
 # 3. fill the deferred CopyRequests with real prose (the copy layer)
-node run-op.js run fill-copy --dataset <id>
+node bin/run-op.js run fill-copy --dataset <id>
 
 # 4. load into the org (standard-object insert order, idempotent)
-node run-op.js run load-demo --org <alias> --dataset <id>
+node bin/run-op.js run load-demo --org <alias> --dataset <id>
 
 # 5. tear down when done
-node run-op.js run teardown-demo --org <alias>
+node bin/run-op.js run teardown-demo --org <alias>
 ```
 
 For corpus-scale (100K accounts, no live org) use `materialize` / `warehouse` instead of `plan-demo` + `load-demo` — see [`docs/design/corpus-warehouse.md`](design/corpus-warehouse.md). To push an already-generated dataset to a sink (Salesforce org, files, etc.) use `disperse` — see [`docs/registry-and-dispersement.md`](registry-and-dispersement.md).

@@ -8,10 +8,10 @@
 // no build step, then imports the composition root (which parses argv, runs the
 // op lifecycle, and calls process.exit with the contract's code).
 //
-//   node run-op.js list                  # list available ops
-//   node run-op.js run <id> [--<arg> v]  # run one op (check -> run -> verify)
-//   node run-op.js run <id> --help       # one op's args / prereqs / affects
-//   node run-op.js run <id> --json       # machine-readable result
+//   node bin/run-op.js list                  # list available ops
+//   node bin/run-op.js run <id> [--<arg> v]  # run one op (check -> run -> verify)
+//   node bin/run-op.js run <id> --help       # one op's args / prereqs / affects
+//   node bin/run-op.js run <id> --json       # machine-readable result
 //
 // Reachable as `dataseed ...` once linked (see "bin" in package.json).
 // Exit codes (unchanged contract): 0 ok/skipped · 3 bad args · 4 verify failed · 5 error.
@@ -37,7 +37,7 @@ if (nodeMajor < 24 && !(process.env.NODE_OPTIONS ?? "").includes("experimental-s
   process.exit(r.status ?? 0);
 }
 
-const here = dirname(selfPath);
+const here = join(dirname(selfPath), ".."); // repo root (this shim lives in bin/)
 // Load secrets (e.g. ANTHROPIC_API_KEY) from a gitignored .env at the repo root, so the
 // copy providers see them no matter which shell launched the op (cwd-independent).
 dotenv.config({ path: join(here, ".env") });

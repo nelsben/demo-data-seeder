@@ -16,7 +16,7 @@ a targeted set of rows to recover. Ben's standing policy:
 ## `storage` — see what's filling an org (read-only)
 
 ```bash
-node run-op.js run storage --org <alias>
+node bin/run-op.js run storage --org <alias>
 ```
 
 Prints:
@@ -41,7 +41,7 @@ A JSON copy of the report lands at `.dataseed/storage/<org>.json`.
 ## `purge` — delete a targeted set of rows (dry-run by default)
 
 ```bash
-node run-op.js run purge --org <alias> --sobject <ApiName> \
+node bin/run-op.js run purge --org <alias> --sobject <ApiName> \
   [--where "<SOQL where clause>"] [--older-than-days N] [--date-field <Field>] \
   [--limit N] [--all] [--yes] [--hard-delete]
 ```
@@ -150,13 +150,13 @@ Administrator profile — it must be granted via a permission set. See
 
 ```bash
 # 1. See what's filling it
-node run-op.js run storage --org <alias>
+node bin/run-op.js run storage --org <alias>
 
 # 2. Preview the delete (dry run — nothing happens yet)
-node run-op.js run purge --org <alias> --sobject Task --older-than-days 30
+node bin/run-op.js run purge --org <alias> --sobject Task --older-than-days 30
 
 # 3. Actually delete, bypassing the Recycle Bin so storage really frees
-node run-op.js run purge --org <alias> --sobject Task --older-than-days 30 --yes --hard-delete
+node bin/run-op.js run purge --org <alias> --sobject Task --older-than-days 30 --yes --hard-delete
 ```
 
 Re-run `storage` afterward to confirm `DataStorageMB` recovered.

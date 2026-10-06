@@ -169,7 +169,7 @@ Order-aware, idempotent, additive. The bundle is **dispersed** to a pluggable **
 
 ## 6. Op contract + open knobs
 
-**Op contract** (canonical: `app-architecture.md` §5, [`CLAUDE.md`](../CLAUDE.md) §1): every operation is `{id, name, description, prerequisites, affects, idempotent, args, check(), run(), verify()}`, run via `node run-op.js run <id> --<arg> <value>` (`list` / `run <id> --help`). Ops, all idempotent:
+**Op contract** (canonical: `app-architecture.md` §5, [`CLAUDE.md`](../CLAUDE.md) §1): every operation is `{id, name, description, prerequisites, affects, idempotent, args, check(), run(), verify()}`, run via `node bin/run-op.js run <id> --<arg> <value>` (`list` / `run <id> --help`). Ops, all idempotent:
 
 | op | role |
 |---|---|

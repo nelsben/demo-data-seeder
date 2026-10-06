@@ -5,7 +5,7 @@
 > framing (what the seeder is, the standard-object model, the operating posture) read the
 > repo-root [`CLAUDE.md`](../CLAUDE.md) §1 first — this doc assumes it and does not re-derive it.
 
-The buildable target is a pnpm monorepo with a **pure, strongly-typed TypeScript engine** as the durable asset, exposed through the locked `run-op.js` op-contract, and fronted by a Vite + React SPA (`apps/web`) over a thin server (`apps/server`) plus an MCP service (`apps/mcp`). The engine blends three generation modes — deterministic seeded RNG → probabilistic variability-matrix sampling → novel LLM copy — behind one load-bearing seam, the `NarrativeBundle`.
+The buildable target is a pnpm monorepo with a **pure, strongly-typed TypeScript engine** as the durable asset, exposed through the locked `bin/run-op.js` op-contract, and fronted by a Vite + React SPA (`apps/web`) over a thin server (`apps/server`) plus an MCP service (`apps/mcp`). The engine blends three generation modes — deterministic seeded RNG → probabilistic variability-matrix sampling → novel LLM copy — behind one load-bearing seam, the `NarrativeBundle`.
 
 ---
 
@@ -13,9 +13,9 @@ The buildable target is a pnpm monorepo with a **pure, strongly-typed TypeScript
 
 ## 1. Decision
 
-**Stack:** a pnpm monorepo (TS strict, ES2022, Node ≥22) with a pure TypeScript engine (`packages/engine`) as the durable asset, exposed through the `run-op.js` op-contract and fronted by a Vite + React SPA (`apps/web`) over a thin server (`apps/server`). Everything domain-specific lives behind the **`TargetPack`** contract (`@dataseed/core`); today there is exactly one pack, **`salescloud`** (`@dataseed/pack-salescloud`), and `@dataseed/core`/`engine` never import a pack back. The engine is staged — **introspect → plan → generate → fill-copy → load** (plus `disperse`/`teardown`) — with the `NarrativeBundle` as the single seam, and every record/profile/op-arg/picklist-set expressed as a **Zod schema that is both the TS type and the runtime guard**. The three generation modes (deterministic skeleton → probabilistic sampling → novel LLM copy) blend inside the pack generator + the engine `copy/` layer, with LLM copy resolved off a `CopyRequest[]` manifest through a content-addressed cache so warm runs are byte-identical and $0.
+**Stack:** a pnpm monorepo (TS strict, ES2022, Node ≥22) with a pure TypeScript engine (`packages/engine`) as the durable asset, exposed through the `bin/run-op.js` op-contract and fronted by a Vite + React SPA (`apps/web`) over a thin server (`apps/server`). Everything domain-specific lives behind the **`TargetPack`** contract (`@dataseed/core`); today there is exactly one pack, **`salescloud`** (`@dataseed/pack-salescloud`), and `@dataseed/core`/`engine` never import a pack back. The engine is staged — **introspect → plan → generate → fill-copy → load** (plus `disperse`/`teardown`) — with the `NarrativeBundle` as the single seam, and every record/profile/op-arg/picklist-set expressed as a **Zod schema that is both the TS type and the runtime guard**. The three generation modes (deterministic skeleton → probabilistic sampling → novel LLM copy) blend inside the pack generator + the engine `copy/` layer, with LLM copy resolved off a `CopyRequest[]` manifest through a content-addressed cache so warm runs are byte-identical and $0.
 
-**Why this shape:** purity is the highest-leverage testability move — the pure stages (`plan`, the pack generator) are snapshot-testable with zero org access, and Zod-as-types-and-guards means a record that violates a restricted picklist fails in a unit test, never as `INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST` at org load. A long-lived server host (not a serverless process) is the deliberate choice because minutes-long LLM ops and streaming load progress need it. The op-contract (`run-op.js`, exit codes `0/3/4/5`) is the single command layer — web, CLI, and the MCP tools all call the same `runOp()`.
+**Why this shape:** purity is the highest-leverage testability move — the pure stages (`plan`, the pack generator) are snapshot-testable with zero org access, and Zod-as-types-and-guards means a record that violates a restricted picklist fails in a unit test, never as `INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST` at org load. A long-lived server host (not a serverless process) is the deliberate choice because minutes-long LLM ops and streaming load progress need it. The op-contract (`bin/run-op.js`, exit codes `0/3/4/5`) is the single command layer — web, CLI, and the MCP tools all call the same `runOp()`.
 
 ---
 
@@ -99,7 +99,7 @@ A guided SPA. The journey is **Point at an org → Introspect → Scope → Prev
 7. **Load & Watch** — one-click load with a streaming SSE progress log following the insert order (Product2 → PricebookEntry → Campaign → User → Account → Contact → Opportunity → … → ContentVersion → Task → Case), idempotency skips shown inline ("Stripe Account exists → skipped"), open-in-org deep links per record.
 8. **Verify & Outcome** — per-stage SOQL assertion checklist (per-object counts present, benchmark cohorts meet their band floors, open pipeline mixed, the narrative records landed on their parents) and an **Outcome read-back** view: what landed in the org, side-by-side with the plan that produced it.
 9. **Runs Library & Teardown** — every introspection + load is a reproducible card (seed, scope, profile snapshot, manifest, cost); re-run byte-for-byte, or scoped purge by a `[dataseed-gen:<runId>]` sentinel in reverse dependency order with a dry-run diff first (`teardown-demo`).
-10. **Op Console (power-user drawer)** — every screen action shown as its `node run-op.js run <op> --<arg> <value>` equivalent (copyable), proving op-contract parity.
+10. **Op Console (power-user drawer)** — every screen action shown as its `node bin/run-op.js run <op> --<arg> <value>` equivalent (copyable), proving op-contract parity.
 
 ---
 
@@ -117,7 +117,7 @@ A guided SPA. The journey is **Point at an org → Introspect → Scope → Prev
 
 **Dispersement (generate-once-disperse-many):** the loader is one **Sink**; the `disperse` op writes a registered dataset to a pluggable sink (Salesforce org, file tree, …). Canonical in [`registry-and-dispersement.md`](./registry-and-dispersement.md).
 
-**The op-contract IS the command layer.** Each op is the locked `{id, name, description, prerequisites, affects, idempotent, args, check(), run(), verify()}` shape with exit codes `0/3/4/5`. `run-op.js` (the existing CLI) delegates into `apps/cli`, which imports the engine ops. The server routes, the CLI, and the MCP tools all call the identical `runOp(op, args, ctx)` — org/LLM I/O injected via the `ctx` object (`conn, rng, cache, llm, log`). Ops: **profile-org** (introspect), **plan-demo**, **materialize** / **warehouse** (corpus), **fill-copy** (LLM copy), **load-demo**, **disperse**, **teardown-demo** — all idempotent.
+**The op-contract IS the command layer.** Each op is the locked `{id, name, description, prerequisites, affects, idempotent, args, check(), run(), verify()}` shape with exit codes `0/3/4/5`. `bin/run-op.js` (the existing CLI) delegates into `apps/cli`, which imports the engine ops. The server routes, the CLI, and the MCP tools all call the identical `runOp(op, args, ctx)` — org/LLM I/O injected via the `ctx` object (`conn, rng, cache, llm, log`). Ops: **profile-org** (introspect), **plan-demo**, **materialize** / **warehouse** (corpus), **fill-copy** (LLM copy), **load-demo**, **disperse**, **teardown-demo** — all idempotent.
 
 ---
 
@@ -135,11 +135,11 @@ demo-data-seeder/
 ├── packs/
 │   └── salescloud/  @dataseed/pack-salescloud  # THE pack: standard Sales Cloud objects, scenarios, schemas, the generator (salescloudGenerate)
 ├── apps/
-│   ├── cli/         # run ops from the terminal (run-op.js delegates here)
+│   ├── cli/         # run ops from the terminal (bin/run-op.js delegates here)
 │   ├── server/      # HTTP API over the engine (thin transport, ZERO business logic) + SSE progress
-│   ├── mcp/         # the MCP server — exposes the seeder to other LLM agents (node dataseed-mcp.js)
+│   ├── mcp/         # the MCP server — exposes the seeder to other LLM agents (node bin/dataseed-mcp.js)
 │   └── web/         # Vite + React + TS SPA (the PRODUCT)
-├── run-op.js        # PRESERVED CLI entry → delegates into apps/cli → engine ops
+├── bin/run-op.js    # PRESERVED CLI entry → delegates into apps/cli → engine ops
 └── docs/            # canonical grounding (CLAUDE.md front door, BRIEF, narrative-design, design/voice.md…)
 ```
 
@@ -171,8 +171,8 @@ Test-first; every feature ships with tests. Purity is the enabling design choice
 
 Each milestone is a **thin vertical slice** that ships something runnable. Order is chosen so the engine (the durable asset) is proven before the GUI thickens, and so the first end-to-end demo lands fast.
 
-- **M0 — Monorepo + engine skeleton + core schemas.** pnpm workspaces + Turborepo; the `@dataseed/core` RNG + the `NarrativeBundle`, `CapabilityProfile`, `ScopeParams`, op-arg **Zod schemas** + the `TargetPack` contract; `run-op.js` working as the CLI entry. Tests: rng determinism, Zod schema round-trips.
-- **M1 — `profile-org` op + introspection (engine + CLI).** All §3 probes, fail-open, against recorded fixtures; `CapabilityProfile` emitted and persisted; gaps surfaced honestly. Ships: `node run-op.js run profile-org --org <alias>`.
+- **M0 — Monorepo + engine skeleton + core schemas.** pnpm workspaces + Turborepo; the `@dataseed/core` RNG + the `NarrativeBundle`, `CapabilityProfile`, `ScopeParams`, op-arg **Zod schemas** + the `TargetPack` contract; `bin/run-op.js` working as the CLI entry. Tests: rng determinism, Zod schema round-trips.
+- **M1 — `profile-org` op + introspection (engine + CLI).** All §3 probes, fail-open, against recorded fixtures; `CapabilityProfile` emitted and persisted; gaps surfaced honestly. Ships: `node bin/run-op.js run profile-org --org <alias>`.
 - **M2 — Pure `plan-demo` + the salescloud generator (deterministic + probabilistic) + dry-run preview.** `(profile, scope, seed) → SeedPlan → NarrativeBundle` with empty copy fields + `CopyRequest[]`; the variability-matrix samplers + cohort-floor constraints. Tests: seed-stability snapshot, sampler distributions, cohort floors.
 - **M3 — The web shell: Connect → Scope → Plan Preview.** Server + SSE + SQLite; the SPA with the CapabilityScorecard (hard gate), the clamped Scope Composer, and the dry-run Plan Preview + coverage heatmap. **The first real "app."** Playwright happy-path through preview.
 - **M4 — Loader + Load & Watch + Verify (REST).** Composite-REST loader, topo-sort, sentinel idempotency, the Verify/Outcome read-back. **First end-to-end: point at a scratch → generate → load → verify.** Integration tier (lease scratch, assert counts, `teardown-demo` clean).

@@ -1,6 +1,6 @@
-# `config/scratch/` — target orgs
+# Target orgs
 
-**There are no scratch-def JSON files here, by design.** The seeder does not own
+**The repo ships no scratch-org definition files, by design.** The seeder does not own
 scratch-org metadata. It loads **only standard Sales Cloud + related standard
 objects** — no custom (`__c`) objects, no managed package, no Data Cloud branch —
 so **any plain Developer-edition scratch org works**, and the same dataset loads
@@ -15,7 +15,7 @@ Every op takes `--org <alias>`, where `<alias>` is a Salesforce CLI alias
 `sf org create scratch --alias <alias> --definition-file <your-def>.json`), then:
 
 ```bash
-node run-op.js run profile-org --org <alias>
+node bin/run-op.js run profile-org --org <alias>
 ```
 
 If you use the MCP server, copy `.mcp.example.json` to `.mcp.json` and set

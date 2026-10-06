@@ -3,7 +3,7 @@
 // dataseed-mcp.js — the MCP server ENTRYPOINT for the dataseed app.
 //
 // Launch this from another agent's MCP client config (command: node, args:
-// [".../dataseed-mcp.js"]). A thin shim like run-op.js: re-exec with the
+// [".../bin/dataseed-mcp.js"]). A thin shim like run-op.js (same dir): re-exec with the
 // node:sqlite flag on Node <24, register tsx's ESM loader (no build step), then
 // import the stdio server (apps/mcp/src/server.ts).
 // =============================================================================
@@ -26,7 +26,7 @@ if (nodeMajor < 24 && !(process.env.NODE_OPTIONS ?? "").includes("experimental-s
   process.exit(r.status ?? 0);
 }
 
-const here = dirname(selfPath);
+const here = join(dirname(selfPath), ".."); // repo root (this shim lives in bin/)
 dotenv.config({ path: join(here, ".env") });
 register();
 await import(join(here, "apps", "mcp", "src", "server.ts"));

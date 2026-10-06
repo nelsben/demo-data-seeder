@@ -1,6 +1,6 @@
 # demo-data-seeder
 
-![demo-data-seeder — grounded synthetic Sales Cloud data, with an MCP server: introspect → generate → load/teardown → MCP](docs/assets/demo-data-seeder-card.png)
+<p align="center"><img src="docs/assets/demo-data-seeder-card.png" width="720" alt="demo-data-seeder — grounded synthetic Sales Cloud data, with an MCP server: introspect → generate → load/teardown → MCP"></p>
 
 Generates realistic, narrative-rich **Salesforce Sales Cloud** datasets — Accounts, Contacts, Leads, Opportunities (with line items), Campaigns, the communication/activity history (emails, call transcripts, activity notes), and the wider account graph (Assets, Cases) — for **demos and testing**.
 
@@ -25,27 +25,27 @@ pnpm install
 pnpm -r build            # or: pnpm -r typecheck / pnpm -r test
 
 # List the ops
-node run-op.js list
+node bin/run-op.js list
 
 # Plan a run (foreground "hero" deals + a bulk population tier), targeting an org alias
-node run-op.js run plan-demo --org <alias> --pack salescloud --volume 5 --population 20
+node bin/run-op.js run plan-demo --org <alias> --pack salescloud --volume 5 --population 20
 
 # Fill the email/transcript/note copy with the realism pipeline (subscription provider)
-node run-op.js run fill-copy --org <alias> --pack salescloud --provider claude-code
+node bin/run-op.js run fill-copy --org <alias> --pack salescloud --provider claude-code
 
 # Load into the org — or disperse to a file / corpus instead
-node run-op.js run load-demo --org <alias> --pack salescloud
-node run-op.js run disperse  --org <alias> --pack salescloud --sink file --target ./out.json
+node bin/run-op.js run load-demo --org <alias> --pack salescloud
+node bin/run-op.js run disperse  --org <alias> --pack salescloud --sink file --target ./out.json
 
 # Materialize a large deterministic corpus with no live org (SQLite)
-node run-op.js run materialize --org <alias> --pack salescloud --population 100000
+node bin/run-op.js run materialize --org <alias> --pack salescloud --population 100000
 
 # Clean teardown for a re-run
-node run-op.js run teardown-demo --org <alias> --pack salescloud
+node bin/run-op.js run teardown-demo --org <alias> --pack salescloud
 
 # See what's filling an org (read-only), then delete a targeted set of rows
-node run-op.js run storage --org <alias>
-node run-op.js run purge   --org <alias> --sobject Task --older-than-days 30 --yes
+node bin/run-op.js run storage --org <alias>
+node bin/run-op.js run purge   --org <alias> --sobject Task --older-than-days 30 --yes
 ```
 
 ### Keeping a demo org alive: `drip`
@@ -54,7 +54,7 @@ A loaded org is a snapshot — any downstream automation or AI pipeline in the o
 frozen activity forever unless something keeps feeding it. `drip` inserts 1-2 new,
 story-consistent interactions on a few open deals each day, as ordinary `EmailMessage`/`Task`/
 `ContentVersion` records, so whatever automation the org runs on activity (triggers, flows, AI
-summaries) keeps seeing fresh records instead of a dead org. Dry-run by default (`node run-op.js run drip --org <alias>`);
+summaries) keeps seeing fresh records instead of a dead org. Dry-run by default (`node bin/run-op.js run drip --org <alias>`);
 pass `--yes` to write. See [docs/drip.md](docs/drip.md) for the daily command, scheduling it
 locally, reading the manifest, and removing drip records via `teardown-demo --include-drip`.
 
@@ -70,9 +70,9 @@ every object's payload at a frozen `(seed, asOf, volume, population)`, blessed a
 bump `GENERATOR_VERSION` in `packages/warehouse/src/cache-key.ts`, then re-bless with **`pnpm bless:golden`**
 and review the snapshot diff in your PR.
 
-All ops are **idempotent**: additive seeds skip existing records; catalog objects (products, campaigns, the User pool) upsert by a natural key. Run `node run-op.js run <id> --help` for an op's args.
+All ops are **idempotent**: additive seeds skip existing records; catalog objects (products, campaigns, the User pool) upsert by a natural key. Run `node bin/run-op.js run <id> --help` for an op's args.
 
-The MCP server exposes the same surface to other LLM agents: `node dataseed-mcp.js`.
+The MCP server exposes the same surface to other LLM agents: `node bin/dataseed-mcp.js`.
 
 ---
 
@@ -89,9 +89,9 @@ packages/
 packs/
   salescloud/  @dataseed/pack-salescloud — THE pack: standard Sales Cloud objects, scenarios, schemas, generator
 apps/
-  cli/    terminal op runner (run-op.js delegates here)
+  cli/    terminal op runner (bin/run-op.js delegates here)
   server/ HTTP API over the engine
-  mcp/    the MCP server (dataseed-mcp.js)
+  mcp/    the MCP server (bin/dataseed-mcp.js)
   web/    the front-end UI
 ```
 

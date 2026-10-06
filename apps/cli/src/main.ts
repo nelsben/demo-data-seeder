@@ -5,7 +5,7 @@
 // to the engine's op-runner. The engine stays pack-agnostic; packs never import
 // the engine. New pack ⇒ one register() line here, nothing else.
 //
-// Invoked by the root run-op.js shim (tsx-registered) and by `pnpm op`.
+// Invoked by the bin/run-op.js shim (tsx-registered) and by `pnpm op`.
 
 import { PackRegistry } from "@dataseed/core";
 import { run, EXIT } from "@dataseed/engine";

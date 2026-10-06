@@ -1,11 +1,9 @@
-# `config/` — static reference data
-
-Small, checked-in reference inputs that are not code.
+# Anchor companies — reference list
 
 | Path | Role |
 |---|---|
-| `anchors/companies.json` | The original real-public-company **anchor list** (name, synthetic `.example` domain, industry, approximate headcount band). Real company names ground the generated Accounts so a demo reads as real; everything around them — contacts, deals, emails — is fictional. The pack's live anchor table now lives in code at `packs/salescloud/src/anchors.ts`; this file is kept as the human-readable source list. |
-| `scratch/README.md` | Notes on which Salesforce orgs the seeder targets (any standard org) and the guardrails for shared orgs. |
+| `anchor-companies.json` | The original real-public-company **anchor list** (name, synthetic `.example` domain, industry, approximate headcount band). Real company names ground the generated Accounts so a demo reads as real; everything around them — contacts, deals, emails — is fictional. The pack's live anchor table now lives in code at `packs/salescloud/src/anchors.ts`; this file is kept as the human-readable source list. |
+| `../target-orgs.md` | Which Salesforce orgs the seeder targets (any standard org) and the guardrails for shared orgs. |
 
 Anchor policy (applies to any anchor list):
 

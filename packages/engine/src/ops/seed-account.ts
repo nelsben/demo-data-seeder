@@ -144,7 +144,7 @@ export const seedAccountOp: Op<SeedAccountArgs> = {
       const total = Object.values(counts).reduce((a, b) => a + b, 0);
       ctx.log(`seeded ${dsId} → ${whPath}`);
       ctx.log(`${total} records: ${Object.entries(counts).filter(([, v]) => v > 0).map(([k, v]) => `${k} ${v}`).join(", ")}`);
-      ctx.log(`inspect:  node run-op.js run warehouse --ds ${dsId} --counts`);
+      ctx.log(`inspect:  node bin/run-op.js run warehouse --ds ${dsId} --counts`);
     } finally {
       store.close();
     }

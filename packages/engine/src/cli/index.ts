@@ -3,7 +3,7 @@
 // The op-runner CLI (ported from the JS run-op.js skeleton to TS). Drives ops
 // through the locked lifecycle: validate args → check → [skip if alreadyDone] →
 // run → verify → structured result. Reachable as `dataseed <verb>` (the root
-// run-op.js shim registers tsx and imports this).
+// bin/run-op.js shim registers tsx and imports this).
 //
 //   dataseed list [--json]
 //   dataseed run <id> [--<arg> v]   |   run <id> --help   |   run <id> --json

@@ -11,7 +11,7 @@ Point an MCP client at the bin (`dataseed-mcp`). It speaks **stdio**. Example `.
   "mcpServers": {
     "dataseed": {
       "command": "node",
-      "args": ["/path/to/demo-data-seeder/dataseed-mcp.js"]
+      "args": ["/path/to/demo-data-seeder/bin/dataseed-mcp.js"]
     }
   }
 }

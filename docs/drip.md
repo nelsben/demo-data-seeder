@@ -39,7 +39,7 @@ today.
 ## Daily command
 
 ```bash
-node run-op.js run drip --org <alias> --yes
+node bin/run-op.js run drip --org <alias> --yes
 ```
 
 Without `--yes` it's a DRY RUN: it prints the plan (deal, cast member, beat kind, subject line, and
@@ -62,7 +62,7 @@ exact command above. Two options:
   <key>ProgramArguments</key>
   <array>
     <string>/usr/local/bin/node</string>
-    <string>run-op.js</string>
+    <string>bin/run-op.js</string>
     <string>run</string>
     <string>drip</string>
     <string>--org</string><string>YOUR_ORG_ALIAS</string>
@@ -88,7 +88,7 @@ Load with `launchctl load ~/Library/LaunchAgents/com.demo-data-seeder.drip.plist
 **cron, weekdays at 07:00 local:**
 
 ```cron
-0 7 * * 1-5 cd /path/to/demo-data-seeder && node run-op.js run drip --org <alias> --yes >> /tmp/drip.log 2>&1
+0 7 * * 1-5 cd /path/to/demo-data-seeder && node bin/run-op.js run drip --org <alias> --yes >> /tmp/drip.log 2>&1
 ```
 
 **The later path:** a GitHub Actions scheduled workflow with a JWT-authenticated `sf` connection
@@ -123,8 +123,8 @@ inserted record's Salesforce Id and natural key:
 the base teardown already resolves. Dry-run by default, same as the rest of `teardown-demo`:
 
 ```bash
-node run-op.js run teardown-demo --org <alias> --include-drip          # preview
-node run-op.js run teardown-demo --org <alias> --include-drip --yes    # actually delete
+node bin/run-op.js run teardown-demo --org <alias> --include-drip          # preview
+node bin/run-op.js run teardown-demo --org <alias> --include-drip --yes    # actually delete
 ```
 
 Drip manifest files themselves are left in place after a delete (a historical record of what was

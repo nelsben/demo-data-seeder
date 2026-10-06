@@ -7,7 +7,7 @@ name: CI
 # As of M0 the repo is a pnpm monorepo (packages/shared, packages/engine; apps/*
 # land in later milestones). The gate is: install (frozen lockfile) → typecheck
 # every package (tsc --noEmit) → run every package's vitest suite → smoke the
-# preserved run-op.js op-contract CLI. node_modules build scripts are blocked by
+# preserved bin/run-op.js op-contract CLI. node_modules build scripts are blocked by
 # pnpm except the explicitly-approved esbuild (pnpm-workspace.yaml allowBuilds).
 
 on:
@@ -57,5 +57,5 @@ jobs:
       # `example` op (check/run/verify only log) must each exit 0.
       - name: Smoke — op runner
         run: |
-          node run-op.js list
-          node run-op.js run example --companies 3
+          node bin/run-op.js list
+          node bin/run-op.js run example --companies 3

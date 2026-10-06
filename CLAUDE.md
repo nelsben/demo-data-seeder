@@ -32,13 +32,13 @@ packages/
 packs/
   salescloud/  @dataseed/pack-salescloud — THE pack: standard Sales Cloud objects, scenarios, schemas, the generator.
 apps/
-  cli/    run ops from the terminal (run-op.js delegates here)
+  cli/    run ops from the terminal (bin/run-op.js delegates here)
   server/ HTTP API over the engine
-  mcp/    the MCP server — exposes the seeder to other LLM agents (`node dataseed-mcp.js`)
+  mcp/    the MCP server — exposes the seeder to other LLM agents (`node bin/dataseed-mcp.js`)
   web/    the front-end UI
 ```
 
-**Op contract:** `{id, name, description, prerequisites, affects, idempotent, args, check(), run(), verify()}`. Run via `node run-op.js run <id> --<arg> <value>` (`list` / `run <id> --help`). Ops: **profile-org** (introspect), **plan-demo**, **materialize** / **warehouse** (corpus), **fill-copy** (LLM copy), **load-demo**, **disperse** (to a sink), **teardown-demo**. All idempotent.
+**Op contract:** `{id, name, description, prerequisites, affects, idempotent, args, check(), run(), verify()}`. Run via `node bin/run-op.js run <id> --<arg> <value>` (`list` / `run <id> --help`). Ops: **profile-org** (introspect), **plan-demo**, **materialize** / **warehouse** (corpus), **fill-copy** (LLM copy), **load-demo**, **disperse** (to a sink), **teardown-demo**. All idempotent.
 
 **LLM copy routing:** the copy layer fills deferred `CopyRequest`s (email/task/transcript bodies) through a provider chain **anthropic → claude-code → static** (the claude-code subscription provider is the realism path; static is the always-on deterministic floor). A realism **gate** (lint → regenerate) + an LLM-as-VP **judge** keep generated copy from reading as AI slop.
 
@@ -131,7 +131,7 @@ Canonical sources for this repo. Read the relevant one before working in its are
 - `.claude/settings.local.json` — per-developer, gitignored (your pre-approved tools, `enabledMcpjsonServers`).
 - `.mcp.example.json` — Salesforce DX MCP server template (`@salesforce/mcp`, toolsets `orgs,metadata,data,users`). Copy to `.mcp.json` (gitignored) and set `--orgs` to your org alias.
 
-**Org targets:** ephemeral scratch orgs (primary), a shared dev org, and real customer orgs. The seeder loads only standard objects, so it works against any Salesforce org with no managed package. Any `sf` CLI alias works (`--org <alias>`); Dev-Edition Dev Hub caps: 6 scratch creates/day, 3 active. See `config/scratch/README.md`.
+**Org targets:** ephemeral scratch orgs (primary), a shared dev org, and real customer orgs. The seeder loads only standard objects, so it works against any Salesforce org with no managed package. Any `sf` CLI alias works (`--org <alias>`); Dev-Edition Dev Hub caps: 6 scratch creates/day, 3 active. See `docs/target-orgs.md`.
 
 ---
 

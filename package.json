@@ -6,8 +6,8 @@
   "type": "module",
   "packageManager": "pnpm@11.7.0",
   "bin": {
-    "dataseed": "./run-op.js",
-    "dataseed-mcp": "./dataseed-mcp.js"
+    "dataseed": "./bin/run-op.js",
+    "dataseed-mcp": "./bin/dataseed-mcp.js"
   },
   "engines": {
     "node": ">=22"
@@ -18,9 +18,9 @@
     "test": "pnpm -r --if-present test",
     "gate": "pnpm -r typecheck && pnpm -r test",
     "build": "pnpm -r --if-present build",
-    "op": "node run-op.js",
-    "list": "node run-op.js list",
-    "smoke": "node run-op.js list && node run-op.js run example --companies 3",
+    "op": "node bin/run-op.js",
+    "list": "node bin/run-op.js list",
+    "smoke": "node bin/run-op.js list && node bin/run-op.js run example --companies 3",
     "bless:golden": "pnpm --filter @dataseed/pack-salescloud exec vitest run -u golden-corpus",
     "dev:server": "pnpm --filter @dataseed/server dev",
     "dev:web": "pnpm --filter @dataseed/web dev"
