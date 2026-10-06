@@ -122,7 +122,7 @@ const REDACTED_MARKER = "[REDACTED";
  * and --verbose additionally queries the Dev Hub for scratch-org metadata, which
  * flakes ("No information for scratch org … found in Dev Hub") and isn't needed here.
  *
- * #94 (open, https://github.com/nelsben/demo-data-seeder/issues/94): newer `sf` CLI versions redact
+ * Known `sf` CLI behavior (tracked as issue #94 in the upstream private repo): newer versions redact
  * `accessToken` in `--json` output by default. Without a fix, this function happily resolves the
  * literal string `"[REDACTED…"` as the bearer token, jsforce wraps it into a Connection, and every
  * subsequent callout 401s with no clue why the org "isn't authenticated." Two-layer fix: (1) set
