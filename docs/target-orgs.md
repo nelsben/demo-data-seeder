@@ -18,8 +18,19 @@ Every op takes `--org <alias>`, where `<alias>` is a Salesforce CLI alias
 node bin/run-op.js run profile-org --org <alias>
 ```
 
-If you use the MCP server, copy `.mcp.example.json` to `.mcp.json` and set
-`--orgs` to the same alias.
+If you use Claude Code with the Salesforce DX MCP server, add a gitignored `.mcp.json`
+at the repo root and set `--orgs` to the same alias:
+
+```json
+{
+  "mcpServers": {
+    "Salesforce DX": {
+      "command": "npx",
+      "args": ["-y", "@salesforce/mcp", "--orgs", "<your-org-alias>", "--toolsets", "orgs,metadata,data,users", "--allow-non-ga-tools"]
+    }
+  }
+}
+```
 
 ## Guardrails for shared orgs
 

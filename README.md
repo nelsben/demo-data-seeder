@@ -60,7 +60,7 @@ locally, reading the manifest, and removing drip records via `teardown-demo --in
 
 ### Local correctness gate
 
-`pnpm install` sets a `core.hooksPath` that activates a **pre-push hook** (`.githooks/pre-push`) running `pnpm -r typecheck && pnpm -r test` before
+`pnpm install` sets a `core.hooksPath` that activates a **pre-push hook** (`scripts/githooks/pre-push`) running `pnpm -r typecheck && pnpm -r test` before
 every push (bypass a docs-only/WIP push with `git push --no-verify`). Run it by hand any time with `pnpm gate`.
 
 The suite includes a **golden-corpus byte fixture** (`packs/salescloud/test/golden-corpus.test.ts`): a hash of

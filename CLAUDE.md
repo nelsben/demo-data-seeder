@@ -129,7 +129,7 @@ Canonical sources for this repo. Read the relevant one before working in its are
 **Claude Code config:**
 - `.claude/settings.json` — committed: `permissions.deny`/`ask`/`allow` + the `pre-git-guard` hook.
 - `.claude/settings.local.json` — per-developer, gitignored (your pre-approved tools, `enabledMcpjsonServers`).
-- `.mcp.example.json` — Salesforce DX MCP server template (`@salesforce/mcp`, toolsets `orgs,metadata,data,users`). Copy to `.mcp.json` (gitignored) and set `--orgs` to your org alias.
+- `.mcp.json` — gitignored, per-developer: the Salesforce DX MCP server (`@salesforce/mcp`) pointed at your org alias. Snippet in `docs/target-orgs.md`.
 
 **Org targets:** ephemeral scratch orgs (primary), a shared dev org, and real customer orgs. The seeder loads only standard objects, so it works against any Salesforce org with no managed package. Any `sf` CLI alias works (`--org <alias>`); Dev-Edition Dev Hub caps: 6 scratch creates/day, 3 active. See `docs/target-orgs.md`.
 

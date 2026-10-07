@@ -4,7 +4,7 @@
 # so this is the ONLY automated correctness gate). Runs typecheck + the full test
 # suite (incl. the golden-corpus byte fixture) before any push reaches the remote.
 #
-# Activated by `core.hooksPath .githooks` (set by the `prepare` npm script on
+# Activated by `core.hooksPath scripts/githooks` (set by the `prepare` npm script on
 # `pnpm install`). To bypass for a docs-only or WIP push:  git push --no-verify
 # ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail

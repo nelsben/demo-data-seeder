@@ -111,8 +111,8 @@ desktop.ini
 
 # ── Claude Code (agent-side) ─────────────────────────────────────────────────
 # .claude/settings.json is committed config. Per-developer local settings and
-# the real MCP config (which names YOUR org alias) stay out of git — copy
-# .mcp.example.json to .mcp.json locally.
+# the MCP config (which names YOUR org alias) stay out of git — see
+# docs/target-orgs.md for the .mcp.json snippet.
 .claude/settings.local.json
 .claude/local/
 .claude/*.local.log

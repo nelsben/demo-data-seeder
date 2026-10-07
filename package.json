@@ -13,7 +13,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "prepare": "git config core.hooksPath .githooks || true",
+    "prepare": "git config core.hooksPath scripts/githooks || true",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm -r --if-present test",
     "gate": "pnpm -r typecheck && pnpm -r test",
