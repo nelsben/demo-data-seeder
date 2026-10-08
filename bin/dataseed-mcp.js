@@ -8,13 +8,16 @@
 // import the stdio server (apps/mcp/src/server.ts).
 // =============================================================================
 
-import { register } from "tsx/esm/api";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { spawnSync } from "node:child_process";
-import dotenv from "dotenv";
+import { ensureDeps } from "./lib/deps-guard.js";
 
 const selfPath = fileURLToPath(import.meta.url);
+const here = join(dirname(selfPath), ".."); // repo root (this shim lives in bin/)
+
+// Never interactive: stdout is the MCP protocol channel. Missing packages → one instruction on stderr, exit 1.
+await ensureDeps({ root: here, command: "node bin/dataseed-mcp.js", interactive: false, exitCode: 1 });
 
 // node:sqlite (the registry backend) needs --experimental-sqlite on Node 22/23; re-exec once.
 const nodeMajor = Number(process.versions.node.split(".")[0]);
@@ -26,7 +29,8 @@ if (nodeMajor < 24 && !(process.env.NODE_OPTIONS ?? "").includes("experimental-s
   process.exit(r.status ?? 0);
 }
 
-const here = join(dirname(selfPath), ".."); // repo root (this shim lives in bin/)
+const { register } = await import("tsx/esm/api");
+const { default: dotenv } = await import("dotenv");
 dotenv.config({ path: join(here, ".env") });
 register();
 await import(join(here, "apps", "mcp", "src", "server.ts"));

@@ -12,6 +12,7 @@ import { join } from "node:path";
 import { CapabilityProfile, standardProfile, SYNTHETIC_ORG } from "@dataseed/core";
 import type { Op } from "./types.js";
 import { SfCliClient } from "../introspect/sf-client.js";
+import { isSfSetupProblem } from "../introspect/sf-errors.js";
 import { assembleProfile } from "../introspect/profile.js";
 
 /** Generic SF objects always worth probing (existence + counts), pack-independent. */
@@ -74,6 +75,11 @@ export const profileOrgOp: Op<ProfileArgs> = {
 
     const capturedAt = new Date().toISOString(); // edge timestamp — fine outside the pure path
     const profile = await assembleProfile(client, { objects, capturedAt });
+
+    // The probes are fail-open by design, but if `sf` is missing or the alias isn't logged in, NONE of
+    // them reached the org — a profile written from that is fiction. Stop with the instruction instead.
+    const setupProblem = profile.gaps.find(isSfSetupProblem);
+    if (setupProblem) throw new Error(setupProblem.replace(/^[\w:]+: /, ""));
 
     mkdirSync(PROFILE_DIR, { recursive: true });
     writeFileSync(profilePath(args.org), JSON.stringify(profile, null, 2) + "\n");

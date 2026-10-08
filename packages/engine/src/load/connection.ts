@@ -9,6 +9,7 @@
 // idempotency logic is unit-testable against a mock — no org required.
 
 import { execFile } from "node:child_process";
+import { explainSfFailure } from "../introspect/sf-errors.js";
 import { Connection } from "jsforce";
 import { withRetry } from "./retry.js";
 
@@ -139,10 +140,13 @@ export function getAccessInfo(org: string, timeoutMs = 30_000): Promise<AccessIn
       ["org", "display", "--target-org", org, "--json"],
       { timeout: timeoutMs, maxBuffer: 16 * 1024 * 1024, env: { ...process.env, SF_TEMP_SHOW_SECRETS: "true" } },
       (err, stdout, stderr) => {
+        // sf missing entirely: no stdout to parse — say so instead of rejecting with an empty message.
+        if (!stdout && err) return reject(new Error(explainSfFailure(err, stderr, stderr || err.message || `sf org display failed for ${org}`)));
         try {
           const env = JSON.parse(stdout || "{}");
           if (env.status !== 0 || !env.result?.accessToken) {
-            return reject(new Error(env.message ?? stderr ?? `sf org display failed for ${org}`));
+            const said: string | undefined = env.message || stderr || undefined;
+            return reject(new Error(explainSfFailure(err, said, said ?? `sf org display failed for ${org}`)));
           }
           const r = env.result;
           if (typeof r.accessToken === "string" && r.accessToken.startsWith(REDACTED_MARKER)) {

@@ -53,11 +53,11 @@ describe("getAccessInfo — sf issue #94 (accessToken redaction)", () => {
     expect(caught!.message).not.toContain("[REDACTED, use --json or sf config get]");
   });
 
-  it("surfaces the sf CLI's own failure message when the org isn't authenticated at all", async () => {
+  it("turns the sf CLI's 'not authenticated' failure into a login instruction for that alias", async () => {
     mockSfOrgDisplay(null, 1);
     execFileMock.mockImplementation((_cmd: string, _args: string[], _opts: Record<string, unknown>, cb: ExecFileCb) => {
       cb(null, JSON.stringify({ status: 1, message: "No authorization information found for dev-frontend." }), "");
     });
-    await expect(getAccessInfo("dev-frontend")).rejects.toThrow(/No authorization information/);
+    await expect(getAccessInfo("dev-frontend")).rejects.toThrow("sf org login web --alias dev-frontend");
   });
 });

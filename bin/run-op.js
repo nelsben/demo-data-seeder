@@ -17,13 +17,22 @@
 // Exit codes (unchanged contract): 0 ok/skipped · 3 bad args · 4 verify failed · 5 error.
 // =============================================================================
 
-import { register } from "tsx/esm/api";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { spawnSync } from "node:child_process";
-import dotenv from "dotenv";
+import { ensureDeps } from "./lib/deps-guard.js";
 
 const selfPath = fileURLToPath(import.meta.url);
+const here = join(dirname(selfPath), ".."); // repo root (this shim lives in bin/)
+
+// Fresh clone? Packages aren't installed yet: in a terminal this launches the setup wizard and then
+// carries on; piped/CI it prints one instruction and exits 5 — never a raw ERR_MODULE_NOT_FOUND.
+await ensureDeps({
+  root: here,
+  command: `node bin/run-op.js ${process.argv.slice(2).join(" ")}`.trim(),
+  interactive: !!(process.stdin.isTTY && process.stdout.isTTY),
+  exitCode: 5,
+});
 
 // The registry backend uses node:sqlite, which is unflagged on Node >=24 but needs
 // --experimental-sqlite on Node 22/23. Re-exec once with the flag so the CLI works
@@ -37,7 +46,8 @@ if (nodeMajor < 24 && !(process.env.NODE_OPTIONS ?? "").includes("experimental-s
   process.exit(r.status ?? 0);
 }
 
-const here = join(dirname(selfPath), ".."); // repo root (this shim lives in bin/)
+const { register } = await import("tsx/esm/api");
+const { default: dotenv } = await import("dotenv");
 // Load secrets (e.g. ANTHROPIC_API_KEY) from a gitignored .env at the repo root, so the
 // copy providers see them no matter which shell launched the op (cwd-independent).
 dotenv.config({ path: join(here, ".env") });

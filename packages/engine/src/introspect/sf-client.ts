@@ -10,6 +10,7 @@
 // job (each catches and records a gap), so one failing read never sinks a profile.
 
 import { execFile } from "node:child_process";
+import { explainSfFailure } from "./sf-errors.js";
 
 /** A raw describe field (only the bits the probes read). */
 export interface DescribeField {
@@ -83,7 +84,7 @@ function sfJson(args: string[], timeoutMs = 60_000): Promise<unknown> {
           /* fall through to error handling */
         }
       }
-      if (err) return reject(new Error(`sf ${args.join(" ")} failed: ${stderr || err.message}`));
+      if (err) return reject(new Error(explainSfFailure(err, stderr, `sf ${args.join(" ")} failed: ${stderr || err.message}`)));
       reject(new Error(`sf ${args.join(" ")} produced no parseable output`));
     });
   });
@@ -103,7 +104,7 @@ export class SfCliClient implements SfClient {
     const args = ["data", "query", "-o", this.org, "-q", soql, "--json"];
     if (opts.tooling) args.push("--use-tooling-api");
     const env = (await sfJson(args)) as SfEnvelope<{ records: T[] }>;
-    if (env.status !== 0) throw new Error(env.message ?? `query failed (status ${env.status})`);
+    if (env.status !== 0) throw new Error(explainSfFailure(null, env.message, env.message ?? `query failed (status ${env.status})`));
     return env.result?.records ?? [];
   }
 
@@ -111,19 +112,19 @@ export class SfCliClient implements SfClient {
     const env = (await sfJson(["org", "list", "limits", "-o", this.org, "--json"])) as SfEnvelope<
       Array<{ name: string; max: number; remaining: number }>
     >;
-    if (env.status !== 0) throw new Error(env.message ?? "limits failed");
+    if (env.status !== 0) throw new Error(explainSfFailure(null, env.message, env.message ?? "limits failed"));
     return env.result ?? [];
   }
 
   async describe(sobject: string): Promise<DescribeResult> {
     const env = (await sfJson(["sobject", "describe", "-o", this.org, "--sobject", sobject, "--json"])) as SfEnvelope<DescribeResult>;
-    if (env.status !== 0) throw new Error(env.message ?? `describe ${sobject} failed`);
+    if (env.status !== 0) throw new Error(explainSfFailure(null, env.message, env.message ?? `describe ${sobject} failed`));
     return env.result;
   }
 
   async listCustomObjects(): Promise<string[]> {
     const env = (await sfJson(["sobject", "list", "-o", this.org, "-s", "custom", "--json"])) as SfEnvelope<string[]>;
-    if (env.status !== 0) throw new Error(env.message ?? "sobject list failed");
+    if (env.status !== 0) throw new Error(explainSfFailure(null, env.message, env.message ?? "sobject list failed"));
     return (env.result ?? []).filter((n) => n.endsWith("__c"));
   }
 
@@ -133,7 +134,7 @@ export class SfCliClient implements SfClient {
       const raw = await new Promise<string>((resolve, reject) => {
         execFile("sf", ["api", "request", "rest", path, "-o", this.org], { timeout: 60_000, maxBuffer: 32 * 1024 * 1024 }, (err, stdout, stderr) => {
           if (stdout && stdout.trim()) return resolve(stdout.trim());
-          if (err) return reject(new Error(stderr || err.message));
+          if (err) return reject(new Error(explainSfFailure(err, stderr, stderr || err.message)));
           resolve("");
         });
       });

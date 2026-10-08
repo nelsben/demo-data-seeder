@@ -32,11 +32,13 @@ packages/
 packs/
   salescloud/  @dataseed/pack-salescloud — THE pack: standard Sales Cloud objects, scenarios, schemas, the generator.
 apps/
-  cli/    run ops from the terminal (bin/run-op.js delegates here)
+  cli/    run ops from the terminal (bin/run-op.js delegates here); also hosts the setup wizard's tests
   server/ HTTP API over the engine
   mcp/    the MCP server — exposes the seeder to other LLM agents (`node bin/dataseed-mcp.js`)
   web/    the front-end UI
 ```
+
+**First run / prerequisites:** `node bin/setup.js` (zero-dependency wizard in `bin/lib/`: Node → pnpm → packages → `sf` → org login → `claude`). `--check` reports without changing anything — run it first when a command fails with a missing tool or org. On a fresh clone, `bin/run-op.js` launches it automatically in a terminal; `bin/dataseed-mcp.js` and piped runs print one instruction instead.
 
 **Op contract:** `{id, name, description, prerequisites, affects, idempotent, args, check(), run(), verify()}`. Run via `node bin/run-op.js run <id> --<arg> <value>` (`list` / `run <id> --help`). Ops: **profile-org** (introspect), **plan-demo**, **materialize** / **warehouse** (corpus), **fill-copy** (LLM copy), **load-demo**, **disperse** (to a sink), **teardown-demo**. All idempotent.
 

@@ -20,10 +20,20 @@ Point it at any Salesforce org. It introspects the org's limits, scopes a run, g
 
 ## Quickstart
 
-```bash
-pnpm install
-pnpm -r build            # or: pnpm -r typecheck / pnpm -r test
+You need **Node 22+**. Everything else, the setup wizard installs for you:
 
+```bash
+git clone https://github.com/nelsben/demo-data-seeder.git && cd demo-data-seeder
+node bin/setup.js
+```
+
+It checks your machine, then walks through each missing piece in order — pnpm, the packages, the
+Salesforce CLI, logging in to an org, and the Claude CLI that writes the emails — asking before it
+installs anything and telling you what you lose if you skip. Nothing is required beyond the packages:
+with no org you can still generate everything offline. `node bin/setup.js --check` re-checks any time
+(`--yes` installs without prompts). Skipped it? Running any command on a fresh copy starts it for you.
+
+```bash
 # List the ops
 node bin/run-op.js list
 

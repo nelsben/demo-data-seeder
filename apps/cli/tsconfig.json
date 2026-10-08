@@ -1,7 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "types": ["node"]
+    "types": ["node"],
+    // Type-check the zero-dependency setup wizard + entrypoints in ../../bin (plain JS with JSDoc types).
+    "allowJs": true,
+    "checkJs": true
   },
-  "include": ["src"]
+  "include": ["src", "test", "../../bin"]
 }

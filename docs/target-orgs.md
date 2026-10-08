@@ -11,7 +11,9 @@ or scratch-org concern.
 ## Pointing the seeder at an org
 
 Every op takes `--org <alias>`, where `<alias>` is a Salesforce CLI alias
-(`sf org list`). Authenticate once (`sf org login web --alias <alias>` or
+(`sf org list`). The quickest way to get one is `node bin/setup.js`, which installs
+the CLI if needed and walks you through the browser login. By hand: authenticate once
+(`sf org login web --alias <alias>` or
 `sf org create scratch --alias <alias> --definition-file <your-def>.json`), then:
 
 ```bash

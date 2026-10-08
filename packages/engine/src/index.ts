@@ -22,6 +22,7 @@ export { fillForegroundCopy } from "./generate/fill-foreground.js";
 // Introspection (M1).
 export { assembleProfile } from "./introspect/profile.js";
 export { SfCliClient } from "./introspect/sf-client.js";
+export { explainSfFailure, isSfSetupProblem, sfMissingMessage, orgNotAuthedMessage } from "./introspect/sf-errors.js";
 export type { SfClient, DescribeResult, DescribeField, LimitRow, RestResponse } from "./introspect/sf-client.js";
 export { probeSynthesis } from "./introspect/synthesis.js";
 export type { SynthesisSummary, SynthesisProbeResult } from "./introspect/synthesis.js";
