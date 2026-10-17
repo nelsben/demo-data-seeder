@@ -13,7 +13,7 @@
 //   2. ERROR-MESSAGE fallback (HARD_DELETE_PERMISSION_ERROR): the pre-check said yes (or couldn't tell)
 //      but the Bulk API rejected the attempt anyway. The regex is anchored on TWO known fragments,
 //      exercised separately below — the sf CLI's own client-side pre-check message, and the RAW jsforce
-//      Bulk API error this class actually hits in practice (captured LIVE against dev-frontend,
+//      Bulk API error this class actually hits in practice (captured LIVE against a scratch org,
 //      2026-09-05 — name/errorCode "FeatureNotEnabled", see RAW_JSFORCE_HARD_DELETE_ERROR_MESSAGE below).
 //      Any OTHER error matches neither fragment and is NOT swallowed into the fallback — it propagates.
 // A "no recycle bin entry found" emptyRecycleBin error (also observed live) is treated as success, not a
@@ -30,7 +30,7 @@ const SF_CLI_HARD_DELETE_PERMISSION_ERROR_MESSAGE = 'You need the Bulk API Hard 
 /** Fragment 2 — the RAW jsforce Bulk API error this class actually hits. Captured LIVE against
  *  a Developer-edition scratch org (2026-09-05): `name` and `errorCode` were both "FeatureNotEnabled";
  *  this is `.message`, verbatim. Since `deleteRows` calls jsforce `bulk.load(..., "hardDelete")` DIRECTLY
- *  (never the sf CLI), THIS is the fragment that matters in practice — dev-frontend's scratch-org user
+ *  (never the sf CLI), THIS is the fragment that matters in practice — a scratch-org user
  *  does NOT hold "Bulk API Hard Delete", so this is exactly the error `purge --hard-delete` hits there. */
 const RAW_JSFORCE_HARD_DELETE_ERROR_MESSAGE = "hardDelete operation requires special user profile permission, please contact your system administrator";
 

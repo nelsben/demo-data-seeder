@@ -132,7 +132,7 @@ export interface ContactIdsByNameResult {
  * dossier needs before its cast can be trusted for a real Salesforce lookup field. A registry dossier's
  * `cast[].ref` is the PLAN-TIME bundle `_ref` ("contact-1-0"), never updated to the real Id the loader
  * assigned at insert time (the registry stores the planned bundle, not a post-load reconciliation) —
- * live-caught on `dev-frontend`: inserting it as `Task.WhoId` fails `MALFORMED_ID`. Matched by
+ * live-caught on a scratch org: inserting it as `Task.WhoId` fails `MALFORMED_ID`. Matched by
  * Contact.Name (the same natural key `docs/open-questions/m4-loader-hardening.md` uses elsewhere),
  * since a registry cast member's `name` DOES match the real seeded Contact's Name.
  *

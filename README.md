@@ -6,6 +6,14 @@ Generates realistic, narrative-rich **Salesforce Sales Cloud** datasets — Acco
 
 Point it at any Salesforce org. It introspects the org's limits, scopes a run, generates **grounded synthetic data** that looks like a real company's pipeline, and loads it (or disperses it to a file / SQLite corpus / MCP consumer). Everything it generates is **standard Salesforce objects** — no custom objects, no managed package required.
 
+**Status.** The CLI ops, the `salescloud` pack, the 100K-account corpus and the MCP server are covered by the
+test suite (it runs before every push) and have been run against live orgs. The web UI (`apps/web`) and
+the HTTP server behind it (`apps/server`) are **experimental**: they work for one guided run on your
+own machine, but have no auth and aren't hardened. Bind them to localhost only, which is the default.
+
+<p align="center"><img src="docs/assets/generated-deal.png" width="860" alt="Generated output: four planned deals whose line items reconcile to each Amount, and an outbound email plus the buyer's reply written by the copy pipeline"></p>
+<p align="center"><sub>Unedited output from one run: the plan, then the emails the copy pipeline wrote for the Toast deal (shown in the experimental web UI). The companies are real public companies used as anchors; the people, deals and emails are synthetic.</sub></p>
+
 ---
 
 ## Why it exists
@@ -32,6 +40,24 @@ Salesforce CLI, logging in to an org, and the Claude CLI that writes the emails 
 installs anything and telling you what you lose if you skip. Nothing is required beyond the packages:
 with no org you can still generate everything offline. `node bin/setup.js --check` re-checks any time
 (`--yes` installs without prompts). Skipped it? Running any command on a fresh copy starts it for you.
+
+Then, against an org you've logged in to:
+
+```bash
+node bin/run-op.js run profile-org --org <alias> --pack salescloud              # read the org's limits (read-only)
+node bin/run-op.js run plan-demo   --org <alias> --pack salescloud --volume 5   # plan 5 story-driven deals
+node bin/run-op.js run fill-copy   --org <alias> --pack salescloud --provider claude-code
+node bin/run-op.js run load-demo   --org <alias> --pack salescloud
+node bin/run-op.js run teardown-demo --org <alias> --pack salescloud            # remove it all again
+```
+
+No org yet? `profile-org --org standard --synthetic` stands in a standard org's profile so you can plan
+and generate locally. The web UI runs the same flow: `pnpm dev:server` and `pnpm dev:web`, then open
+http://localhost:5173.
+
+---
+
+## Ops
 
 ```bash
 # List the ops
@@ -68,7 +94,9 @@ summaries) keeps seeing fresh records instead of a dead org. Dry-run by default 
 pass `--yes` to write. See [docs/drip.md](docs/drip.md) for the daily command, scheduling it
 locally, reading the manifest, and removing drip records via `teardown-demo --include-drip`.
 
-### Local correctness gate
+---
+
+## Development
 
 `pnpm install` sets a `core.hooksPath` that activates a **pre-push hook** (`scripts/githooks/pre-push`) running `pnpm -r typecheck && pnpm -r test` before
 every push (bypass a docs-only/WIP push with `git push --no-verify`). Run it by hand any time with `pnpm gate`.

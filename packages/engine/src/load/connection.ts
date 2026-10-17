@@ -204,7 +204,7 @@ const soqlEscape = (v: string) => v.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
  *      permission…". This repo never goes through that CLI command, so this fragment is speculative
  *      insurance, not something observed here.
  *   2. "requires special user profile permission" — the RAW jsforce Bulk API error this class actually
- *      hits, captured LIVE against dev-frontend (2026-09-05): `name`/`errorCode` both "FeatureNotEnabled",
+ *      hits, captured LIVE against a scratch org (2026-09-05): `name`/`errorCode` both "FeatureNotEnabled",
  *      message "hardDelete operation requires special user profile permission, please contact your system
  *      administrator". Since `deleteRows` calls jsforce `bulk.load(..., "hardDelete")` DIRECTLY (never the
  *      sf CLI), this is the fragment that matters in practice.

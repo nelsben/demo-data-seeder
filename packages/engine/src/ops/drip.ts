@@ -144,7 +144,7 @@ async function buildDealPlans(client: SfCliClient, cache: DripDossierCache, args
     const castByRef = new Map(dossier.cast.map((c) => [c.ref, c]));
     // A REGISTRY dossier's cast[].ref is a plan-time bundle ref ("contact-1-0"), never the real
     // Salesforce Id the loader assigned — reconcile by Contact.Name before trusting it as WhoId
-    // (live-caught on dev-frontend: MALFORMED_ID on Task.WhoId without this).
+    // (live-caught on a scratch org: MALFORMED_ID on Task.WhoId without this).
     const { byName: realContactIdByName, ambiguousNames } = await fetchContactIdsByName(client, cand.oppId);
     for (const name of ambiguousNames) {
       log(`${cand.accountName} — "${cand.oppName}": ambiguous contact name "${name}" (multiple distinct Contacts share it) — omitting the participant rather than guessing which one`);

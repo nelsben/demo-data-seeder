@@ -94,14 +94,14 @@ node bin/run-op.js run purge --org <alias> --sobject <ApiName> \
        pre-check message. This repo never goes through that CLI command, so this
        fragment is speculative insurance, not something observed here.
      - `"requires special user profile permission"` — the **RAW jsforce Bulk API
-       error this class actually hits**, captured LIVE against `dev-frontend`
+       error this class actually hits**, captured LIVE against a scratch org
        (2026-09-05, org user lacking the permission): `name` and `errorCode` were
        both `FeatureNotEnabled`, and `.message` was, verbatim:
        > `hardDelete operation requires special user profile permission, please contact your system administrator`
 
        Since `deleteRows` calls jsforce `bulk.load(..., "hardDelete")` **directly**
        (never the sf CLI), this second fragment is the one that matters in practice —
-       it's exactly what `dev-frontend`'s scratch-org user hits, confirming that org's
+       it's exactly what the scratch-org user hits, confirming that org's
        user does **not** hold Bulk API Hard Delete (matching what the deterministic
        pre-check independently reports there).
 
@@ -196,9 +196,9 @@ Live validation (a disposable dev org only — **never** a shared CI-validate or
 `storage`, then `purge --sobject Task --older-than-days 30` dry-run, then
 `--yes`, then `storage` again — outputs pasted in the PR that introduced these ops.
 Separately (2026-09-05), the raw jsforce Bulk API `hardDelete` error text quoted above
-was captured live against `dev-frontend` by calling the (otherwise private)
+was captured live against a scratch org by calling the (otherwise private)
 `hardDeleteBulk` path directly on a handful of throwaway `Task` rows, bypassing the
 pre-check/regex on purpose to force the real Salesforce error to surface; the rows
-were then confirmed soft-deleted in cleanup. `dev-frontend`'s scratch-org user does
+were then confirmed soft-deleted in cleanup. The scratch-org user does
 **not** hold Bulk API Hard Delete, so both the deterministic pre-check and the
 error-message fallback are exercised for real on that org today.

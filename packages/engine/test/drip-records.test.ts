@@ -16,10 +16,10 @@ const target: RecordTarget = {
   closeDate: "2026-12-31",
   primaryContactName: "Dana Kessler",
   aeName: "Alex Rivera",
-  aeEmail: "alex@sellerco.com",
+  aeEmail: "alex@sellerco.example",
 };
 
-const participant: RecordParticipant = { contactId: "003A1", name: "Dana Kessler", email: "dana@acme-prospect.com", persona: "Champion" };
+const participant: RecordParticipant = { contactId: "003A1", name: "Dana Kessler", email: "dana@acme-prospect.example", persona: "Champion" };
 
 const emailBeat: DraftBeat = { kind: "email", day: "2026-09-04T15:00:00.000Z", author: "Dana Kessler", authorRef: "003A1", participantRef: "003A1", direction: "inbound", sentiment: "Risk", summary: "budget pushback", conveys: "the CFO wants a revised quote" };
 const taskBeat: DraftBeat = { kind: "task", day: "2026-09-04T00:00:00.000Z", author: "Alex Rivera", participantRef: "003A1", sentiment: "Neutral", summary: "logged a call recap" };
