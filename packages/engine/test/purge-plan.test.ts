@@ -170,7 +170,7 @@ describe("chunkIds", () => {
 
 describe("purge manifest — round trip", () => {
   const manifest: PurgeManifest = {
-    org: "dev-frontend",
+    org: "demo-org",
     sobject: "Audit_Log__c",
     predicate: "CreatedDate < LAST_N_DAYS:30",
     hardDelete: false,

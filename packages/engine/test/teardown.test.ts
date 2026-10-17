@@ -94,7 +94,7 @@ const bundle = NarrativeBundle.parse({
 const bundleWithLead = NarrativeBundle.parse({
   records: {
     Account: [{ _ref: "a0", Name: "Stripe" }],
-    Lead: [{ _ref: "l0", Email: "jamie@acme-prospect.com" }],
+    Lead: [{ _ref: "l0", Email: "jamie@acme-prospect.example" }],
   },
   plan: { pack: "salescloud", mode: "inputs", withDc: false, seed: 1, asOf: "2026-06-17T00:00:00.000Z", requestedVolume: 2, volume: 2 },
 });
@@ -104,7 +104,7 @@ const bundleWithLead = NarrativeBundle.parse({
 const bundleWithConvertedLead = NarrativeBundle.parse({
   records: {
     Account: [{ _ref: "a0", Name: "Stripe" }],
-    Lead: [{ _ref: "l0", Email: "quinta.romero@crowdstrike.com", Company: "CrowdStrike" }],
+    Lead: [{ _ref: "l0", Email: "quinta.romero@northwind.example", Company: "Northwind Freight" }],
   },
   plan: { pack: "salescloud", mode: "inputs", withDc: false, seed: 1, asOf: "2026-06-17T00:00:00.000Z", requestedVolume: 2, volume: 2 },
 });
@@ -182,7 +182,7 @@ describe("teardownBundle", () => {
 
   it("also tears down Leads (Email-matched) and their CampaignMembers", async () => {
     const org = new MockOrg({
-      leadsByEmail: { "jamie@acme-prospect.com": "00Q1" },
+      leadsByEmail: { "jamie@acme-prospect.example": "00Q1" },
       accountsByName: { Stripe: "001A" },
       campaignMembersByLead: { "00Q1": ["00vL1"] },
     });
@@ -194,8 +194,8 @@ describe("teardownBundle", () => {
 
   it("also finds a CONVERTED Lead's minted Account via Lead.Company (closes the convertLead orphan gap)", async () => {
     const org = new MockOrg({
-      leadsByEmail: { "quinta.romero@crowdstrike.com": "00Q2" },
-      accountsByName: { Stripe: "001A", CrowdStrike: "001C" }, // "CrowdStrike" was never in records.Account
+      leadsByEmail: { "quinta.romero@northwind.example": "00Q2" },
+      accountsByName: { Stripe: "001A", "Northwind Freight": "001C" }, // "Northwind Freight" was never in records.Account
       oppsByAccount: { "001C": ["006C"] }, // the Opportunity convertLead minted alongside the new Account
       contactsByAccount: { "001C": ["003C1"] },
     });

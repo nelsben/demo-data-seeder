@@ -16,7 +16,7 @@ const registryDossier = DealDossier.parse({
   provenance: "static",
 });
 
-const input = { org: "dev-frontend", pack: "salescloud", seed: "demo-seed", oppId: "006A", oppName: "Acme — Platform Expansion", accountName: "Acme" };
+const input = { org: "demo-org", pack: "salescloud", seed: "demo-seed", oppId: "006A", oppName: "Acme — Platform Expansion", accountName: "Acme" };
 
 function deps(overrides: Partial<DossierResolverDeps> = {}): DossierResolverDeps {
   return {
